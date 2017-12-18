@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.daqsoft.mapper.TestMapper">
+    <select id="getList" parameterType="string" resultType="com.daqsoft.entity.Test">
+        SELECT
+        *
+        FROM
+        wx_test
+        <where>
+            <if test="name != null and '' != name">
+              name LIKE '%${name}%'
+            </if>
+        </where>
+    </select>
+</mapper>
