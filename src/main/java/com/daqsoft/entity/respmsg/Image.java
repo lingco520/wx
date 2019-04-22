@@ -18,7 +18,7 @@ package com.daqsoft.entity.respmsg;
  * @Warning:
  */
 
-public class Image extends BaseMessage{
+public class Image{
     /**
      * 媒体文件id
      */

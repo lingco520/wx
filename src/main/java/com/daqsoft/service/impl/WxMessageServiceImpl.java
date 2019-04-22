@@ -6,13 +6,18 @@
  */
 package com.daqsoft.service.impl;
 
+import com.daqsoft.entity.respmsg.Image;
+import com.daqsoft.entity.respmsg.ImageMessage;
 import com.daqsoft.entity.respmsg.TextMessage;
+import com.daqsoft.entity.respmsg.Video;
+import com.daqsoft.entity.respmsg.VideoMessage;
+import com.daqsoft.entity.respmsg.Voice;
+import com.daqsoft.entity.respmsg.VoiceMessage;
 import com.daqsoft.service.WxMessageService;
 import com.daqsoft.utils.MessageUtil;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -48,29 +53,66 @@ public class WxMessageServiceImpl implements WxMessageService{
             String toUserName = requestMap.get("ToUserName");
             // 消息类型
             String msgType = requestMap.get("MsgType");
-
-            // 回复文本消息
-            TextMessage textMessage = new TextMessage();
-            textMessage.setToUserName(fromUserName);
-            textMessage.setFromUserName(toUserName);
-            textMessage.setCreateTime(new Date().getTime());
-            textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-
+            // 时间
+            long time = System.currentTimeMillis();
             // 文本消息
             if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {
-                respContent = "您发送的是文本消息！";
+                // 回复文本消息
+                TextMessage textMessage = new TextMessage();
+                textMessage.setToUserName(fromUserName);
+                textMessage.setFromUserName(toUserName);
+                textMessage.setCreateTime(time);
+                textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+                // 文本内容
+                String content = requestMap.get("Content");
+                respContent = "您发送的是文本消息！"+ content;
+                // 设置文本消息的内容
+                textMessage.setContent(respContent);
+                // 将文本消息对象转换成xml
+                respXml = MessageUtil.messageToXml(textMessage);
             }
             // 图片消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_IMAGE.equals(msgType)) {
-                respContent = "您发送的是图片消息！";
+                String picUrl = requestMap.get("PicUrl");
+                System.out.println(picUrl);
+                ImageMessage imageMessage = new ImageMessage();
+                imageMessage.setToUserName(fromUserName);
+                imageMessage.setFromUserName(toUserName);
+                imageMessage.setCreateTime(time);
+                imageMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_IMAGE);
+                Image image = new Image();
+                image.setMediaId(requestMap.get("MediaId"));
+                imageMessage.setImage(image);
+                respXml = MessageUtil.messageToXml(imageMessage);
             }
             // 语音消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_VOICE.equals(msgType)) {
-                respContent = "您发送的是语音消息！";
+                // 语音消息微信转换成文字内容
+                String recognition = requestMap.get("Recognition");
+                System.out.println(recognition);
+                VoiceMessage voiceMessage = new VoiceMessage();
+                voiceMessage.setToUserName(fromUserName);
+                voiceMessage.setFromUserName(toUserName);
+                voiceMessage.setCreateTime(time);
+                voiceMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_VOICE);
+                Voice voice = new Voice();
+                voice.setMediaId(requestMap.get("MediaId"));
+                voiceMessage.setVoice(voice);
+                respXml = MessageUtil.messageToXml(voiceMessage);
             }
             // 视频消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_VIDEO.equals(msgType)) {
-                respContent = "您发送的是视频消息！";
+                // 发送过来的视频封面图的 媒体id
+                String thumbmediaId = requestMap.get("ThumbMediaId");
+                VideoMessage videoMessage = new VideoMessage();
+                videoMessage.setFromUserName(toUserName);
+                videoMessage.setToUserName(fromUserName);
+                videoMessage.setCreateTime(time);
+                videoMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_VIDEO);
+                Video video = new Video();
+                video.setMediaId(requestMap.get("MediaId"));
+                video.setThumbMediaId(thumbmediaId);
+                videoMessage.setVideo(video);
             }
             // 视频消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_SHORTVIDEO.equals(msgType)) {
@@ -113,10 +155,6 @@ public class WxMessageServiceImpl implements WxMessageService{
                     respContent = "处理菜单点击事件！";
                 }
             }
-            // 设置文本消息的内容
-            textMessage.setContent(respContent);
-            // 将文本消息对象转换成xml
-            respXml = MessageUtil.messageToXml(textMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
