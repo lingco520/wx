@@ -114,17 +114,63 @@ public class WxMessageServiceImpl implements WxMessageService{
                 video.setThumbMediaId(thumbmediaId);
                 videoMessage.setVideo(video);
             }
-            // 视频消息
+            // 小视频消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_SHORTVIDEO.equals(msgType)) {
-                respContent = "您发送的是小视频消息！";
+                // 发送过来的视频封面图的 媒体id
+                String thumbmediaId = requestMap.get("ThumbMediaId");
+                VideoMessage videoMessage = new VideoMessage();
+                videoMessage.setFromUserName(toUserName);
+                videoMessage.setToUserName(fromUserName);
+                videoMessage.setCreateTime(time);
+                videoMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_SHORT_VIDEO);
+                Video video = new Video();
+                video.setMediaId(requestMap.get("MediaId"));
+                video.setThumbMediaId(thumbmediaId);
+                videoMessage.setVideo(video);
             }
             // 地理位置消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_LOCATION.equals(msgType)) {
-                respContent = "您发送的是地理位置消息！";
+                // 地理位置纬度
+                String location_x = requestMap.get("Location_X");
+                // 地理位置经度
+                String location_y = requestMap.get("Location_Y");
+                // 地理位置信息
+                String label = requestMap.get("Label");
+                // 地图缩放大小
+                String scale = requestMap.get("Scale");
+                TextMessage textMessage = new TextMessage();
+                textMessage.setToUserName(fromUserName);
+                textMessage.setFromUserName(toUserName);
+                textMessage.setCreateTime(time);
+                textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+                respContent = "上报地理位置！\n" +
+                        "经度："+ location_y + "\n" +
+                        "纬度：" + location_x + "\n" +
+                        "位置：" + label;
+                // 设置文本消息的内容
+                textMessage.setContent(respContent);
+                // 将文本消息对象转换成xml
+                respXml = MessageUtil.messageToXml(textMessage);
+
             }
             // 链接消息
             else if (MessageUtil.REQ_MESSAGE_TYPE_LINK.equals(msgType)) {
-                respContent = "您发送的是链接消息！";
+                String title = requestMap.get("Title");
+                String description = requestMap.get("Description");
+                String url = requestMap.get("Url");
+                TextMessage textMessage = new TextMessage();
+                textMessage.setToUserName(fromUserName);
+                textMessage.setFromUserName(toUserName);
+                textMessage.setCreateTime(time);
+                textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+                respContent = "您发送的是链接消息！\n" +
+                "title：" + title + "\n"+
+                "description：" + description + "\n"+
+                "url：" + url + "\n";
+                // 设置文本消息的内容
+                textMessage.setContent(respContent);
+                // 将文本消息对象转换成xml
+                respXml = MessageUtil.messageToXml(textMessage);
             }
             // 事件推送
             else if (MessageUtil.REQ_MESSAGE_TYPE_EVENT.equals(msgType)) {
@@ -132,12 +178,23 @@ public class WxMessageServiceImpl implements WxMessageService{
                 String eventType = requestMap.get("Event");
                 // 关注
                 if (MessageUtil.EVENT_TYPE_SUBSCRIBE.equals(eventType)) {
-                    respContent = "谢谢您的关注！";
+                    TextMessage textMessage = new TextMessage();
+                    textMessage.setToUserName(fromUserName);
+                    textMessage.setFromUserName(toUserName);
+                    textMessage.setCreateTime(time);
+                    textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+                    respContent = "来了，老弟！欢迎关注公众号。\n";
+                    // 设置文本消息的内容
+                    textMessage.setContent(respContent);
+                    // 将文本消息对象转换成xml
+                    respXml = MessageUtil.messageToXml(textMessage);
+                    System.out.println(respContent);
                 }
                 // 取消关注
                 else if (MessageUtil.EVENT_TYPE_UNSUBSCRIBE.equals(eventType)) {
                     // TODO 取消订阅后用户不会再收到公众账号发送的消息，因此不需要回复
                     respContent = "取消关注！";
+                    System.out.println(respContent);
                 }
                 // 扫描带参数二维码
                 else if (MessageUtil.EVENT_TYPE_SCAN.equals(eventType)) {
@@ -148,6 +205,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 else if (MessageUtil.EVENT_TYPE_LOCATION.equals(eventType)) {
                     // TODO 处理上报地理位置事件
                     respContent = "处理上报地理位置事件！";
+                    System.out.println(requestMap);
                 }
                 // 自定义菜单
                 else if (MessageUtil.EVENT_TYPE_CLICK.equals(eventType)) {

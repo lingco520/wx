@@ -6,7 +6,13 @@
  */
 package com.daqsoft.utils;
 
-import com.daqsoft.entity.respmsg.*;
+import com.daqsoft.entity.respmsg.Article;
+import com.daqsoft.entity.respmsg.ImageMessage;
+import com.daqsoft.entity.respmsg.MusicMessage;
+import com.daqsoft.entity.respmsg.NewsMessage;
+import com.daqsoft.entity.respmsg.TextMessage;
+import com.daqsoft.entity.respmsg.VideoMessage;
+import com.daqsoft.entity.respmsg.VoiceMessage;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.QuickWriter;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -29,53 +35,92 @@ import java.util.Map;
  * @Date: 2017/12/14 11:36
  * @Description: TODO 消息处理工具类
  * @Comment：
- * @see
  * @Version:
- * @since JDK 1.8
  * @Warning:
+ * @see
+ * @since JDK 1.8
  */
 
 public class MessageUtil {
-    // 请求消息类型：文本
+    /**
+     * 请求消息类型：文本
+     */
     public static final String REQ_MESSAGE_TYPE_TEXT = "text";
-    // 请求消息类型：图片
+    /**
+     * 请求消息类型：图片
+     */
     public static final String REQ_MESSAGE_TYPE_IMAGE = "image";
-    // 请求消息类型：语音
+    /**
+     * 请求消息类型：语音
+     */
     public static final String REQ_MESSAGE_TYPE_VOICE = "voice";
-    // 请求消息类型：视频
+    /**
+     * 请求消息类型：视频
+     */
     public static final String REQ_MESSAGE_TYPE_VIDEO = "video";
-    // 请求消息类型：小视频
+    /**
+     * 请求消息类型：小视频
+     */
     public static final String REQ_MESSAGE_TYPE_SHORTVIDEO = "shortvideo";
-    // 请求消息类型：地理位置
+    /**
+     * 请求消息类型：地理位置
+     */
     public static final String REQ_MESSAGE_TYPE_LOCATION = "location";
-    // 请求消息类型：链接
+    /**
+     * 请求消息类型：链接
+     */
     public static final String REQ_MESSAGE_TYPE_LINK = "link";
-
-    // 请求消息类型：事件推送
+    /**
+     * 请求消息类型：事件推送
+     */
     public static final String REQ_MESSAGE_TYPE_EVENT = "event";
-
-    // 事件类型：subscribe(订阅)
+    /**
+     * 事件类型：subscribe(订阅)
+     */
     public static final String EVENT_TYPE_SUBSCRIBE = "subscribe";
-    // 事件类型：unsubscribe(取消订阅)
+    /**
+     * 事件类型：unsubscribe(取消订阅)
+     */
     public static final String EVENT_TYPE_UNSUBSCRIBE = "unsubscribe";
-    // 事件类型：scan(用户已关注时的扫描带参数二维码)
+    /**
+     * 事件类型：scan(用户已关注时的扫描带参数二维码)
+     */
     public static final String EVENT_TYPE_SCAN = "scan";
-    // 事件类型：LOCATION(上报地理位置)
+    /**
+     * 事件类型：LOCATION(上报地理位置)
+     */
     public static final String EVENT_TYPE_LOCATION = "LOCATION";
-    // 事件类型：CLICK(自定义菜单)
+    /**
+     * 事件类型：CLICK(自定义菜单)
+     */
     public static final String EVENT_TYPE_CLICK = "CLICK";
-
-    // 响应消息类型：文本
+    /**
+     * 响应消息类型：文本
+     */
     public static final String RESP_MESSAGE_TYPE_TEXT = "text";
-    // 响应消息类型：图片
+    /**
+     * 响应消息类型：图片
+     */
     public static final String RESP_MESSAGE_TYPE_IMAGE = "image";
-    // 响应消息类型：语音
+    /**
+     * 响应消息类型：语音
+     */
     public static final String RESP_MESSAGE_TYPE_VOICE = "voice";
-    // 响应消息类型：视频
+    /**
+     * 响应消息类型：视频
+     */
     public static final String RESP_MESSAGE_TYPE_VIDEO = "video";
-    // 响应消息类型：音乐
+    /**
+     * 响应消息类型：小视频
+     */
+    public static final String RESP_MESSAGE_TYPE_SHORT_VIDEO = "shortvideo";
+    /**
+     * 响应消息类型：音乐
+     */
     public static final String RESP_MESSAGE_TYPE_MUSIC = "music";
-    // 响应消息类型：图文
+    /**
+     * 响应消息类型：图文
+     */
     public static final String RESP_MESSAGE_TYPE_NEWS = "news";
 
     /**
@@ -101,9 +146,9 @@ public class MessageUtil {
         List<Element> elementList = root.elements();
 
         // 遍历所有子节点
-        for (Element e : elementList)
+        for (Element e : elementList) {
             map.put(e.getName(), e.getText());
-
+        }
         // 释放资源
         inputStream.close();
         inputStream = null;
@@ -121,10 +166,12 @@ public class MessageUtil {
                 boolean cdata = true;
 
                 @SuppressWarnings("unchecked")
+                @Override
                 public void startNode(String name, Class clazz) {
                     super.startNode(name, clazz);
                 }
 
+                @Override
                 protected void writeText(QuickWriter writer, String text) {
                     if (cdata) {
                         writer.write("<![CDATA[");

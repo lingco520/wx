@@ -7,7 +7,6 @@
 package com.daqsoft.controller;
 
 import com.daqsoft.service.WxMessageService;
-import com.daqsoft.utils.MessageUtil;
 import com.daqsoft.utils.SignUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,8 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
 
 /**
  * @Title: WxMessageController
@@ -63,11 +60,6 @@ public class WxMessageController {
             }
             return "";
         }
-        // 下面代码对微信消息或事件进行处理
-        // 消息的接收、处理、响应
-        // 将请求、响应的编码均设置为UTF-8（防止中文乱码）
-        /*request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");*/
         // 调用核心业务类接收消息、处理消息
         String respXml = wxMessageService.processRequest(request);
         return respXml;
