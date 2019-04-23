@@ -6,12 +6,16 @@
  */
 package com.daqsoft.utils;
 
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import com.daqsoft.constant.WxConstant;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Title: SignUtil
@@ -100,5 +104,83 @@ public class SignUtil {
     public static String getAccessToken() {
         String url = String.format(WxConstant.ACCESS_TOKEN_URL, WxConstant.APP_ID, WxConstant.APP_SECRET);
         return HttpUtil.get(url);
+    }
+
+    /**
+     * 获取access_token
+     *
+     * @return access_token
+     */
+    public static String getWechatIP(String accessToken) {
+        String url = String.format(WxConstant.WECHAT_IP_URL, accessToken);
+        return HttpUtil.get(url);
+    }
+
+    /**
+     * 微信网络检测
+     *
+     * @param accessToken
+     * @return
+     */
+    public static String getWechatCheck(String accessToken) {
+        String url = String.format(WxConstant.WECHAT_CHECK_URL, accessToken);
+        Map parMap = new HashMap<>(2);
+        // action	是	执行的检测动作，允许的值：dns（做域名解析）、ping（做ping检测）、all（dns和ping都做）
+        // check_operator	是	指定平台从某个运营商进行检测，允许的值：CHINANET（电信出口）、UNICOM（联通出口）、CAP（腾讯自建出口）、DEFAULT（根据ip来选择运营商）
+        parMap.put("action", "ping");
+        parMap.put("check_operator", "DEFAULT");
+        return HttpUtil.post(url, parMap);
+    }
+
+    /**
+     * 创建个性化菜单
+     * @param accessToken
+     * @return
+     */
+    public static String addConditionalMenu(String accessToken) {
+        String menu = "{\n" +
+                "    \"button\": [\n" +
+                "        {\n" +
+                "            \"type\": \"click\", \n" +
+                "            \"name\": \"今日歌曲\", \n" +
+                "            \"key\": \"V1001_TODAY_MUSIC\"\n" +
+                "        }, \n" +
+                "        {\n" +
+                "            \"name\": \"菜单\", \n" +
+                "            \"sub_button\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"view\", \n" +
+                "                    \"name\": \"搜索\", \n" +
+                "                    \"url\": \"http://www.soso.com/\"\n" +
+                "                }, \n" +
+                "                {\n" +
+                "                    \"type\": \"miniprogram\", \n" +
+                "                    \"name\": \"wxa\", \n" +
+                "                    \"url\": \"http://mp.weixin.qq.com\", \n" +
+                "                    \"appid\": \"wx286b93c14bbf93aa\", \n" +
+                "                    \"pagepath\": \"pages/lunar/index\"\n" +
+                "                }, \n" +
+                "                {\n" +
+                "                    \"type\": \"click\", \n" +
+                "                    \"name\": \"赞一下我们\", \n" +
+                "                    \"key\": \"V1001_GOOD\"\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ], \n" +
+                "    \"matchrule\": {\n" +
+                "        \"tag_id\": \"2\", \n" +
+                "        \"sex\": \"1\", \n" +
+                "        \"country\": \"中国\", \n" +
+                "        \"province\": \"四川\", \n" +
+                "        \"city\": \"成都\", \n" +
+                "        \"client_platform_type\": \"2\", \n" +
+                "        \"language\": \"zh_CN\"\n" +
+                "    }\n" +
+                "}";
+        String url = String.format(WxConstant.ADD_CONDITIONAL_MENU_URL, accessToken);
+        String result = HttpRequest.post(url).body(menu).header(Header.CONTENT_TYPE,
+                "application/json").execute().body();
+        return result;
     }
 }

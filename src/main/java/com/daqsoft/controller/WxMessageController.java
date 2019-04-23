@@ -6,6 +6,7 @@
  */
 package com.daqsoft.controller;
 
+import cn.hutool.json.JSONObject;
 import com.daqsoft.service.WxMessageService;
 import com.daqsoft.utils.SignUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,20 @@ public class WxMessageController {
         }
         // 调用核心业务类接收消息、处理消息
         String respXml = wxMessageService.processRequest(request);
+        // 调试获取access_token
+        String accessTokenObj = SignUtil.getAccessToken();
+        System.out.println("accessToken：" + accessTokenObj);
+        // 获取微信服务器IP地址
+        JSONObject jsonObject = new JSONObject(accessTokenObj);
+        String accessToken = jsonObject.getStr("access_token");
+        String wechatIp = SignUtil.getWechatIP(accessToken);
+        System.out.println("微信服务器IP：" + wechatIp);
+        // 微信网络检测
+        String res = SignUtil.getWechatCheck(accessToken);
+        System.out.println("网络检测：" + res);
+        // 测试创建个性化菜单
+        String addConditionalMenu = SignUtil.addConditionalMenu(accessToken);
+        System.out.println("个性化菜单：" + addConditionalMenu);
         return respXml;
     }
 }
