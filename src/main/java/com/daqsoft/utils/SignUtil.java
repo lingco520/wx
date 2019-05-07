@@ -134,6 +134,7 @@ public class SignUtil {
 
     /**
      * 创建个性化菜单
+     *
      * @param accessToken
      * @return
      */
@@ -181,6 +182,18 @@ public class SignUtil {
         String url = String.format(WxConstant.ADD_CONDITIONAL_MENU_URL, accessToken);
         String result = HttpRequest.post(url).body(menu).header(Header.CONTENT_TYPE,
                 "application/json").execute().body();
+        return result;
+    }
+
+    /**
+     * 获取公众号的自动回复规则
+     *
+     * @param accessToken accessToken
+     * @return 自动回复规则
+     */
+    public static String getCurrentAutoreplyInfo(String accessToken) {
+        String url = String.format(WxConstant.GET_CURRENT_AUTOREPLY_INFO_URL, accessToken);
+        String result = HttpUtil.get(url);
         return result;
     }
 }

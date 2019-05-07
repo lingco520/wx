@@ -34,4 +34,9 @@ public interface WxConstant {
      * 创建个性化菜单
      */
     String ADD_CONDITIONAL_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=%s";
+    /**
+     * 获取公众号的自动回复规则
+     */
+    String GET_CURRENT_AUTOREPLY_INFO_URL = "https://api.weixin.qq" +
+            ".com/cgi-bin/get_current_autoreply_info?access_token=%s";
 }

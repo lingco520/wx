@@ -77,6 +77,9 @@ public class WxMessageController {
         // 测试创建个性化菜单
         String addConditionalMenu = SignUtil.addConditionalMenu(accessToken);
         System.out.println("个性化菜单：" + addConditionalMenu);
+        // 测试 获取公众号的自动回复规则
+        String currentAutoreplyInfo = SignUtil.getCurrentAutoreplyInfo(accessToken);
+        System.out.println("公众号的自动回复规则：" + currentAutoreplyInfo);
         return respXml;
     }
 }
