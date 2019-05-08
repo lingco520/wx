@@ -6,10 +6,12 @@
  */
 package com.daqsoft.controller;
 
-import cn.hutool.json.JSONObject;
+import cn.hutool.core.util.StrUtil;
+import com.daqsoft.constant.WxConstant;
 import com.daqsoft.service.WxMessageService;
 import com.daqsoft.utils.SignUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Title: WxMessageController
@@ -36,7 +39,8 @@ import java.io.IOException;
 public class WxMessageController {
     @Autowired
     private WxMessageService wxMessageService;
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     /**
      * 微信服务器地址验证，消息事件处理
      * @param request
@@ -47,7 +51,8 @@ public class WxMessageController {
      */
     @ResponseBody
     @RequestMapping(value = "/chat", method = {RequestMethod.GET, RequestMethod.POST})
-    public Object msg(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    public Object msg(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException,
+            Exception{
         // 判断微信是有效性验证还是消息、事件处理(有效性验证：echostr不为空，消息事件时echostr为空)
         String echostr = request.getParameter("echostr");
         if(!StringUtils.isEmpty(echostr)){
@@ -64,22 +69,29 @@ public class WxMessageController {
         // 调用核心业务类接收消息、处理消息
         String respXml = wxMessageService.processRequest(request);
         // 调试获取access_token
-        String accessTokenObj = SignUtil.getAccessToken();
-        System.out.println("accessToken：" + accessTokenObj);
-        // 获取微信服务器IP地址
-        JSONObject jsonObject = new JSONObject(accessTokenObj);
-        String accessToken = jsonObject.getStr("access_token");
-        String wechatIp = SignUtil.getWechatIP(accessToken);
-        System.out.println("微信服务器IP：" + wechatIp);
-        // 微信网络检测
-        String res = SignUtil.getWechatCheck(accessToken);
-        System.out.println("网络检测：" + res);
-        // 测试创建个性化菜单
-        String addConditionalMenu = SignUtil.addConditionalMenu(accessToken);
-        System.out.println("个性化菜单：" + addConditionalMenu);
-        // 测试 获取公众号的自动回复规则
-        String currentAutoreplyInfo = SignUtil.getCurrentAutoreplyInfo(accessToken);
-        System.out.println("公众号的自动回复规则：" + currentAutoreplyInfo);
+        String accessToken = stringRedisTemplate.opsForValue().get(WxConstant.APP_ID);
+        if (StrUtil.isEmpty(accessToken)) {
+            accessToken = SignUtil.getAccessToken();
+            if (StrUtil.isNotEmpty(accessToken)) {
+                stringRedisTemplate.opsForValue().set(WxConstant.APP_ID, accessToken, WxConstant.ACCESS_TOKEN_EXPIRE,
+                        TimeUnit.SECONDS);
+            }
+        }
+//        String wechatIp = SignUtil.getWechatIP(accessToken);
+//        System.out.println("微信服务器IP：" + wechatIp);
+//        // 微信网络检测
+//        String res = SignUtil.getWechatCheck(accessToken);
+//        System.out.println("网络检测：" + res);
+//        // 测试创建个性化菜单
+//        String addConditionalMenu = SignUtil.addConditionalMenu(accessToken);
+//        System.out.println("个性化菜单：" + addConditionalMenu);
+//        // 测试 获取公众号的自动回复规则
+//        String currentAutoreplyInfo = SignUtil.getCurrentAutoreplyInfo(accessToken);
+//        System.out.println("公众号的自动回复规则：" + currentAutoreplyInfo);
+//        System.out.println(SignUtil.getUserSummary(accessToken));
+//        System.out.println(SignUtil.getUserCumulate(accessToken));
+//        System.out.println(SignUtil.semproxySearch(accessToken));
+//        System.out.println(SignUtil.addVoicetoreCofortext(accessToken));
         return respXml;
     }
 }

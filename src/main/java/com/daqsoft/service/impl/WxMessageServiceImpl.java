@@ -56,7 +56,7 @@ public class WxMessageServiceImpl implements WxMessageService{
             // 时间
             long time = System.currentTimeMillis();
             // 文本消息
-            if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {
+            if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equalsIgnoreCase(msgType)) {
                 // 回复文本消息
                 TextMessage textMessage = new TextMessage();
                 textMessage.setToUserName(fromUserName);
@@ -72,7 +72,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 respXml = MessageUtil.messageToXml(textMessage);
             }
             // 图片消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_IMAGE.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_IMAGE.equalsIgnoreCase(msgType)) {
                 String picUrl = requestMap.get("PicUrl");
                 System.out.println(picUrl);
                 ImageMessage imageMessage = new ImageMessage();
@@ -86,7 +86,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 respXml = MessageUtil.messageToXml(imageMessage);
             }
             // 语音消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_VOICE.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_VOICE.equalsIgnoreCase(msgType)) {
                 // 语音消息微信转换成文字内容
                 String recognition = requestMap.get("Recognition");
                 System.out.println(recognition);
@@ -101,7 +101,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 respXml = MessageUtil.messageToXml(voiceMessage);
             }
             // 视频消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_VIDEO.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_VIDEO.equalsIgnoreCase(msgType)) {
                 // 发送过来的视频封面图的 媒体id
                 String thumbmediaId = requestMap.get("ThumbMediaId");
                 VideoMessage videoMessage = new VideoMessage();
@@ -115,7 +115,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 videoMessage.setVideo(video);
             }
             // 小视频消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_SHORTVIDEO.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_SHORTVIDEO.equalsIgnoreCase(msgType)) {
                 // 发送过来的视频封面图的 媒体id
                 String thumbmediaId = requestMap.get("ThumbMediaId");
                 VideoMessage videoMessage = new VideoMessage();
@@ -129,7 +129,7 @@ public class WxMessageServiceImpl implements WxMessageService{
                 videoMessage.setVideo(video);
             }
             // 地理位置消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_LOCATION.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_LOCATION.equalsIgnoreCase(msgType)) {
                 // 地理位置纬度
                 String location_x = requestMap.get("Location_X");
                 // 地理位置经度
@@ -154,7 +154,7 @@ public class WxMessageServiceImpl implements WxMessageService{
 
             }
             // 链接消息
-            else if (MessageUtil.REQ_MESSAGE_TYPE_LINK.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_LINK.equalsIgnoreCase(msgType)) {
                 String title = requestMap.get("Title");
                 String description = requestMap.get("Description");
                 String url = requestMap.get("Url");
@@ -173,45 +173,47 @@ public class WxMessageServiceImpl implements WxMessageService{
                 respXml = MessageUtil.messageToXml(textMessage);
             }
             // 事件推送
-            else if (MessageUtil.REQ_MESSAGE_TYPE_EVENT.equals(msgType)) {
+            else if (MessageUtil.REQ_MESSAGE_TYPE_EVENT.equalsIgnoreCase(msgType)) {
                 // 事件类型
                 String eventType = requestMap.get("Event");
+                // 回复消息
+                TextMessage textMessage = new TextMessage();
+                textMessage.setToUserName(fromUserName);
+                textMessage.setFromUserName(toUserName);
+                textMessage.setCreateTime(time);
+                textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
                 // 关注
-                if (MessageUtil.EVENT_TYPE_SUBSCRIBE.equals(eventType)) {
-                    TextMessage textMessage = new TextMessage();
-                    textMessage.setToUserName(fromUserName);
-                    textMessage.setFromUserName(toUserName);
-                    textMessage.setCreateTime(time);
-                    textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+                if (MessageUtil.EVENT_TYPE_SUBSCRIBE.equalsIgnoreCase(eventType)) {
+
                     respContent = "来了，老弟！欢迎关注公众号。\n";
-                    // 设置文本消息的内容
-                    textMessage.setContent(respContent);
-                    // 将文本消息对象转换成xml
-                    respXml = MessageUtil.messageToXml(textMessage);
                     System.out.println(respContent);
                 }
                 // 取消关注
-                else if (MessageUtil.EVENT_TYPE_UNSUBSCRIBE.equals(eventType)) {
+                else if (MessageUtil.EVENT_TYPE_UNSUBSCRIBE.equalsIgnoreCase(eventType)) {
                     // TODO 取消订阅后用户不会再收到公众账号发送的消息，因此不需要回复
                     respContent = "取消关注！";
                     System.out.println(respContent);
                 }
                 // 扫描带参数二维码
-                else if (MessageUtil.EVENT_TYPE_SCAN.equals(eventType)) {
+                else if (MessageUtil.EVENT_TYPE_SCAN.equalsIgnoreCase(eventType)) {
                     // TODO 处理扫描带参数二维码事件
                     respContent = "扫描带参数二维码事件！";
                 }
                 // 上报地理位置
-                else if (MessageUtil.EVENT_TYPE_LOCATION.equals(eventType)) {
+                else if (MessageUtil.EVENT_TYPE_LOCATION.equalsIgnoreCase(eventType)) {
                     // TODO 处理上报地理位置事件
                     respContent = "处理上报地理位置事件！";
                     System.out.println(requestMap);
                 }
                 // 自定义菜单
-                else if (MessageUtil.EVENT_TYPE_CLICK.equals(eventType)) {
+                else if (MessageUtil.EVENT_TYPE_CLICK.equalsIgnoreCase(eventType)) {
                     // TODO 处理菜单点击事件
                     respContent = "处理菜单点击事件！";
                 }
+                // 设置文本消息的内容
+                textMessage.setContent(respContent);
+                // 将文本消息对象转换成xml
+                respXml = MessageUtil.messageToXml(textMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();

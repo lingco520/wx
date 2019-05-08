@@ -18,6 +18,10 @@ public interface WxConstant {
      */
     String APP_SECRET = "f92e39f24c7473f96dc6635b65175cb2";
     /**
+     * 微信公众号access_token过期时间(秒)，官方是 2小时(7200秒)，这里设置7000
+     */
+    long ACCESS_TOKEN_EXPIRE = 7000;
+    /**
      * 获取access_token接口
      */
     String ACCESS_TOKEN_URL = "https://api.weixin.qq" +
