@@ -2,6 +2,7 @@ package com.daqsoft.constant;
 
 /**
  * 微信常量
+ *
  * @author TangGuangMing
  * @version 4.0
  * @date 2019-04-22 11:03
@@ -9,6 +10,14 @@ package com.daqsoft.constant;
  */
 
 public interface WxConstant {
+    /**
+     * 基础access_token拼接前缀
+     */
+    String BASIC = "basic";
+    /**
+     * 网页授权access_token拼接前缀
+     */
+    String OAUTH = "oauth";
     /**
      * 公众号appId
      */
@@ -43,4 +52,17 @@ public interface WxConstant {
      */
     String GET_CURRENT_AUTOREPLY_INFO_URL = "https://api.weixin.qq" +
             ".com/cgi-bin/get_current_autoreply_info?access_token=%s";
+    /**
+     * 获取用户基本信息(UnionID机制)
+     */
+    String USER_INFO = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN";
+    /**
+     * 网页授权获取access_token
+     */
+    String OATH2_ACCESS_TOKEN = "https://api.weixin.qq" +
+            ".com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
+    /**
+     * 网页授权获取用户基本信息
+     */
+    String SNSAPI_USERINFO = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
 }

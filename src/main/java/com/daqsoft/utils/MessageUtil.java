@@ -122,6 +122,10 @@ public class MessageUtil {
      * 响应消息类型：图文
      */
     public static final String RESP_MESSAGE_TYPE_NEWS = "news";
+    /**
+     * 响应消息类型：将消息转发至客服系统
+     */
+    public static final String RESP_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE = "transfer_customer_service";
 
     /**
      * 解析微信发来的请求（XML）

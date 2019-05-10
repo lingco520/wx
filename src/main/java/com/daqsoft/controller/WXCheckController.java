@@ -7,10 +7,11 @@
 package com.daqsoft.controller;
 
 import com.daqsoft.utils.SignUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/wx")
 public class WXCheckController {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     /**
      * 验证配置有效性
      * @param signature 微信加密签名

@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @Warning:
  */
 @Controller
+@RequestMapping(value = "/weChat")
 public class WxMessageController {
     @Autowired
     private WxMessageService wxMessageService;
@@ -69,11 +70,12 @@ public class WxMessageController {
         // 调用核心业务类接收消息、处理消息
         String respXml = wxMessageService.processRequest(request);
         // 调试获取access_token
-        String accessToken = stringRedisTemplate.opsForValue().get(WxConstant.APP_ID);
+        String accessToken = stringRedisTemplate.opsForValue().get(WxConstant.BASIC + WxConstant.APP_ID);
         if (StrUtil.isEmpty(accessToken)) {
             accessToken = SignUtil.getAccessToken();
             if (StrUtil.isNotEmpty(accessToken)) {
-                stringRedisTemplate.opsForValue().set(WxConstant.APP_ID, accessToken, WxConstant.ACCESS_TOKEN_EXPIRE,
+                stringRedisTemplate.opsForValue().set(WxConstant.BASIC + WxConstant.APP_ID, accessToken, WxConstant
+                                .ACCESS_TOKEN_EXPIRE,
                         TimeUnit.SECONDS);
             }
         }
@@ -92,6 +94,29 @@ public class WxMessageController {
 //        System.out.println(SignUtil.getUserCumulate(accessToken));
 //        System.out.println(SignUtil.semproxySearch(accessToken));
 //        System.out.println(SignUtil.addVoicetoreCofortext(accessToken));
+//        accessToken = "21_S-KlriE_NysxZzh_pxbnKTWQPElOHk7DjfEX5NFxNaj0DodMTU8BSNoo99dZ2PtSoFdXHmpgu11Uvg1CAbeqny60n1FoNu7DPxLB43bvdsjurMlHXDE0dF4taatFpJtofQct3sSIaK9RYSyzJKXeAGAXYL";
+        SignUtil.getUserInfo(accessToken, "ox6540yvn5ikGF6DtSrYBg-inWLA");
         return respXml;
+    }
+    /**
+     * 网页授权获取用户信息
+     * @param code 授权后的code，用于获取access_token（与普通access_token不同）
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getOauthUserInfo", method = RequestMethod.GET)
+    public Object getOauth2UserInfo(String code){
+        String accessToken = stringRedisTemplate.opsForValue().get(WxConstant.OAUTH + WxConstant.APP_ID);
+        if (StrUtil.isEmpty(accessToken)) {
+            accessToken = SignUtil.getAccessToken(code);
+            if (StrUtil.isNotEmpty(accessToken)) {
+                stringRedisTemplate.opsForValue().set(WxConstant.OAUTH + WxConstant.APP_ID, accessToken, WxConstant
+                        .ACCESS_TOKEN_EXPIRE, TimeUnit.SECONDS);
+            }
+        }
+        String openid = "";
+        String snsapiUserinfo = SignUtil.getSnsapiUserinfo(accessToken, openid);
+        System.out.println("授权获取用户信息：" + snsapiUserinfo);
+        return "";
     }
 }

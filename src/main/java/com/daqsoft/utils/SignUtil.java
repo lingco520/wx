@@ -46,6 +46,7 @@ public class SignUtil {
      * 与接口配置中的token一致
      */
     private static String token = "lingco";
+
     /**
      * 验证签名
      *
@@ -110,7 +111,7 @@ public class SignUtil {
     }
 
     /**
-     * 获取access_token
+     * 获取普通access_token
      *
      * @return access_token
      */
@@ -216,10 +217,11 @@ public class SignUtil {
 
     /**
      * 获取公众号拉黑用户列表
+     *
      * @param accessToken accessToken
      * @return 用户openid列表
      */
-    public static String membersBlacklist(String accessToken){
+    public static String membersBlacklist(String accessToken) {
         String url = String.format("https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=%s",
                 accessToken);
         Map param = new HashMap(2);
@@ -228,12 +230,14 @@ public class SignUtil {
                 "application/json").execute().body();
         return result;
     }
+
     /**
      * 批量拉黑用户
+     *
      * @param accessToken accessToken
      * @return 操作结果
      */
-    public static String membersBatchblacklist(String accessToken){
+    public static String membersBatchblacklist(String accessToken) {
         String url = String.format("https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=%s",
                 accessToken);
         Map param = new HashMap(2);
@@ -242,12 +246,14 @@ public class SignUtil {
                 "application/json").execute().body();
         return result;
     }
+
     /**
      * 批量取消拉黑的用户
+     *
      * @param accessToken accessToken
      * @return 操作结果
      */
-    public static String membersBatchunblacklist(String accessToken){
+    public static String membersBatchunblacklist(String accessToken) {
         String url = String.format("https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=%s",
                 accessToken);
         Map param = new HashMap(2);
@@ -259,10 +265,11 @@ public class SignUtil {
 
     /**
      * 创建临时二维码ticket
+     *
      * @param accessToken
      * @return 包含ticket的数据
      */
-    public static String getQrcodeQrScene(String accessToken) throws Exception{
+    public static String getQrcodeQrScene(String accessToken) throws Exception {
         String qrcodeUrl = String.format("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=%s",
                 accessToken);
         Map param = new HashMap(3);
@@ -300,12 +307,14 @@ public class SignUtil {
         resMap.put("url", url);
         return JSONUtil.toJsonStr(resMap);
     }
+
     /**
      * 创建永久二维码ticket
+     *
      * @param accessToken
      * @return 包含ticket的数据
      */
-    public static String getQrcodeQrLimitScene(String accessToken) throws Exception{
+    public static String getQrcodeQrLimitScene(String accessToken) throws Exception {
         String qrcodeUrl = String.format("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=%s",
                 accessToken);
         Map param = new HashMap(2);
@@ -341,6 +350,7 @@ public class SignUtil {
 
     /**
      * 获取用户增减数据
+     *
      * @param accessToken
      * @return 用户增减数据
      */
@@ -355,8 +365,10 @@ public class SignUtil {
                 "application/json").execute().body();
         return result;
     }
+
     /**
      * 获取用户累计数据
+     *
      * @param accessToken
      * @return 用户累计数据
      */
@@ -374,10 +386,11 @@ public class SignUtil {
 
     /**
      * 语义理解(查询)
+     *
      * @param accessToken
      * @return 结果数据
      */
-    public static String semproxySearch(String accessToken){
+    public static String semproxySearch(String accessToken) {
         String url = String.format("https://api.weixin.qq.com/semantic/semproxy/search?access_token=%s",
                 accessToken);
         Map param = new HashMap(2);
@@ -391,30 +404,24 @@ public class SignUtil {
                 "application/json").execute().body();
         return result;
     }
+
     /**
      * AI开放接口--提交语音
      * 注意：添加完文件之后10s内调用语音识别接口(queryRecoResultFortext())
+     *
      * @param accessToken
      * @return 结果数据
      */
-    public static String addVoicetoreCofortext(String accessToken){
-//        String mediaObj = addMaterial(accessToken);
-//        JSONObject media = new JSONObject(mediaObj);
-//        String mediaId = media.getStr("media_id");
-//        System.out.println("素材：" + mediaId);
-//        System.out.println(getBatchgetMaterial(accessToken));
+    public static String addVoicetoreCofortext(String accessToken) {
         // 下面是提交语音到微信公众平台
         String voiceId = UUID.randomUUID().toString();
         String url = "http://api.weixin.qq.com/cgi-bin/media/voice/addvoicetorecofortext?access_token=%s" +
                 "&format=%s&voice_id=%s&lang=%s";
         url = String.format(url, accessToken, "mp3", voiceId, "zh_CN");
-        Map param = new HashMap(2);
-        param.put("access_token", accessToken);
-        param.put("format", "mp3");
-//        param.put("voice_id", mediaId);
-        param.put("lang", "zh_CN");
-        String paramStr = JSONUtil.toJsonStr(param);
         File file = FileUtil.file("E:\\aaaa.mp3");
+        Map param = new HashMap(2);
+        param.put("file", file);
+        String paramStr = JSONUtil.toJsonStr(param);
         FileInputStream fis = null;
         byte[] buffer = null;
         try {
@@ -431,9 +438,9 @@ public class SignUtil {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-        e.printStackTrace();
-    }
-    String result = HttpRequest.post(url).body(buffer).header(Header.CONTENT_TYPE,
+            e.printStackTrace();
+        }
+        String result = HttpRequest.post(url).body(buffer).header(Header.CONTENT_TYPE,
                 "application/json").execute().body();
         JSONObject jsonObject = new JSONObject(result);
         System.out.println("提交语音结果：" + result);
@@ -445,13 +452,15 @@ public class SignUtil {
         }
         return res;
     }
+
     /**
      * AI开放接口--获取提交语音的识别结果
+     *
      * @param accessToken
-     * @param voiceId 语音媒体id
+     * @param voiceId     语音媒体id
      * @return 结果数据
      */
-    private static String queryRecoResultFortext(String accessToken, String voiceId){
+    private static String queryRecoResultFortext(String accessToken, String voiceId) {
         String url = "http://api.weixin.qq.com/cgi-bin/media/voice/queryrecoresultfortext?access_token=%s&voice_id" +
                 "=%s&lang=zh_CN";
         url = String.format(url, accessToken, voiceId);
@@ -462,10 +471,11 @@ public class SignUtil {
 
     /**
      * 获取素材列表
+     *
      * @param accessToken
      * @return
      */
-    public static String getBatchgetMaterial(String accessToken){
+    public static String getBatchgetMaterial(String accessToken) {
         String url = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=%s";
         url = String.format(url, accessToken);
         Map param = new HashMap(2);
@@ -480,17 +490,65 @@ public class SignUtil {
 
     /**
      * 多媒体素材上传接口
+     *
      * @param accessToken
      * @return
      */
-    public static String addMaterial(String accessToken){
+    public static String addMaterial(String accessToken) {
         String url = "https://api.weixin.qq.com/cgi-bin/material/add_material";
         Map paramMap = new HashMap(1);
         paramMap.put("media", FileUtil.file("E:\\aaaa.mp3"));
         paramMap.put("access_token", accessToken);
         paramMap.put("type", "voice");
-        String result= HttpUtil.post(url, paramMap);
+        String result = HttpUtil.post(url, paramMap);
         return result;
     }
 
+    /**
+     * 获取用户信息，通过UnionID机制
+     *
+     * @param accessToken token
+     * @param openid      用户openid
+     * @return 用户数据
+     */
+    public static String getUserInfo(String accessToken, String openid) {
+        String url = String.format(WxConstant.USER_INFO, accessToken, openid);
+        String result = HttpUtil.get(url);
+        JSONObject jsonObject = new JSONObject(result);
+        String unionid = jsonObject.getStr("unionid");
+        System.out.println("用户unionid：" + unionid);
+        System.out.println(result);
+        return result;
+    }
+
+    /**
+     * 获取微信网页授权access_token
+     *
+     * @param code 授权换取的code
+     * @return access_token数据
+     */
+    public static String getAccessToken(String code) {
+        String url = String.format(WxConstant.OATH2_ACCESS_TOKEN, WxConstant.APP_ID, WxConstant.APP_SECRET, code);
+        String result = HttpUtil.get(url);
+        String accessToken = "";
+        if (StrUtil.isNotBlank(result)) {
+            JSONObject jsonObject = new JSONObject(result);
+            accessToken = jsonObject.getStr("access_token");
+        }
+        System.out.println("网页授权accessToken：" + accessToken);
+        return accessToken;
+    }
+
+    /**
+     * 微信网页授权获取用户信息
+     * @param accessToken accessToken
+     * @param openid 用户唯一标识openid
+     * @return 用户数据
+     */
+    public static String getSnsapiUserinfo(String accessToken, String openid) {
+        String url = String.format(WxConstant.SNSAPI_USERINFO, accessToken, openid);
+        String result = HttpUtil.get(url);
+        System.out.println("网页授权用户信息：" + result);
+        return result;
+    }
 }
